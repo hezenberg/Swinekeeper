@@ -144,7 +144,7 @@ extern RECT* GetRedrawArea(INT8 *iter)
 
 static BOOL PushRedrawArea(RECT *redraw_area)
 {
-	if(need_redraw.last_object_iter > 5) 
+	if(need_redraw.last_object_iter > TOTAL_PUSH_REDRAW_OBJ) 
 		return FALSE;
 		
 	need_redraw.arr_area[need_redraw.last_object_iter] = *redraw_area;

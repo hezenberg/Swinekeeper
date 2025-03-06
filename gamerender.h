@@ -16,7 +16,7 @@
 #define WIN_WIDTH               280
 #define OUTLINE_SPACE           5
 #define RECT_SIZE_ON_FLAG       70
-
+#define TOTAL_PUSH_REDRAW_OBJ   5
 ///////////////////////| ERROR DEFINE |////////////////////////
 #define FAILD_FONT  "faild load font for rendering"
 
@@ -87,12 +87,16 @@ static BOOL RectToDrawLine(HDC hdc, RECT* rect);
 // Restart game and redraw game area
 static void RenderGameRestart(void);
 
-static void GenerateRandCover(void);
 
-static void DrawFlagOnBlock(HDC hdc, RECT* pos);
-
-static void DrawBombBlock(HDC hdc, RECT* pos);
-
-static void DrawNormalBlock(HDC hdc, RECT *pos);
-
-static void DrawEmptyBlock(HDC hdc, RECT *pos);
+             /* DRAWING BLOCKS */
+////////////////////////////////////////////////////
+static void GenerateRandCover(void);              //
+                                                  //
+static void DrawFlagOnBlock(HDC hdc, RECT* pos);  //
+                                                  //
+static void DrawBombBlock(HDC hdc, RECT* pos);    //
+                                                  //
+static void DrawNormalBlock(HDC hdc, RECT *pos);  //
+                                                  //
+static void DrawEmptyBlock(HDC hdc, RECT *pos);   //
+///////////////////////////////////////////////////
