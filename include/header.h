@@ -16,8 +16,9 @@
 #define KEY_R 0x52
 
 
-extern void GetIntegerMessage(LONG num);
-extern void GetMsg(LPSTR text); // DEBUG
+extern void GetIntegerMessage(LONG num);   // DEBUG
+extern void GetMsg(LPSTR text);            // DEBUG
+
 extern void GetMessageErrorAndExit(LPSTR text_error);
 
 

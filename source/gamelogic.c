@@ -4,7 +4,7 @@ static INT8       flags                    = COUNT_BOMB;
 static PLAYFBLOCK playfblocks[OVER_BLOCKS] = {};
 static BOOL       FlagYouLooser            = FALSE;
 
-extern PLAYFBLOCK *GameBlocksInitialization()
+extern PLAYFBLOCK* GameBlocksInitialization()
 {   
 	flags = COUNT_BOMB;
 	FlagYouLooser  = FALSE;
