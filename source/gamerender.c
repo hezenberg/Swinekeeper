@@ -1,18 +1,18 @@
-#include "gamerender.h"
+#include "../include/gamerender.h"
 
 static RECT         drawing_free_area;
 static WINOBJPOS    win_objects_pos;
 static HFONT        help_text_font       = NULL;
 static HFONT        count_flag_text_font = NULL;
-static PLAYFBLOCK   *rplayfblocks;
+static PLAYFBLOCK** rplayfblocks;
 static RECT         rand_line_cover[30];
 static NEEDREDRAW   need_redraw;
 
 extern void GameRenderInitialization(RECT* _drawing_free_area)
 {
 	LoadFonts();
-	rplayfblocks = GameBlocksInitialization();
-	GenerateRandCover();
+	rplayfblocks = (PLAYFBLOCK**)GameBlocksInitialization();
+
 	drawing_free_area = *_drawing_free_area;
 	need_redraw.last_object_iter = 0;
 
@@ -76,6 +76,8 @@ extern void GameRenderInitialization(RECT* _drawing_free_area)
 	win_objects_pos.line_on_the_char_flag_bottom.top    = drawing_free_area.top   + OUTLINE_SPACE + 30; 
 	win_objects_pos.line_on_the_char_flag_bottom.right  = drawing_free_area.right - RECT_SIZE_ON_FLAG + 10; 
 	win_objects_pos.line_on_the_char_flag_bottom.bottom = drawing_free_area.top   + OUTLINE_SPACE + 30;  
+
+	return;
 	
 }	
 
@@ -100,15 +102,18 @@ static void LoadFonts(void)
 
 extern void RenderHandleMouseEvent(POINT mouse_pos, INT8 mouse_btn)
 {
-	for(INT8 block = 0; block < OVER_BLOCKS; block++){
-		if (CheckColision(&rplayfblocks[block].pos_block, &mouse_pos)){
-			GameHandleGameBlocks(mouse_btn, block);
-			PushRedrawArea(&rplayfblocks[block].pos_block);
-			PushRedrawArea(&win_objects_pos.count_text_flags);
+	for(INT8 i = 0; i < HEIGHT_BLOCKS; i++){
+		for(INT8 f = 0; f < WIDTH_BLOCKS; f++){
+			if (CheckColision(&rplayfblocks[i][f].pos_block, &mouse_pos)){
+				GameHandleGameBlocks(mouse_btn, i, f);
+				PushRedrawArea(&rplayfblocks[i][f].pos_block);
+				PushRedrawArea(&win_objects_pos.count_text_flags);
 			
+			}
 		}
 	}
 }
+
 
 
 BOOL RenderHandleKeysEvent(UINT_PTR key)
@@ -162,6 +167,7 @@ void RedrawAll(void)
 
 extern void DrawGame(HDC hdc)
 {
+
   	//------------------- Help text ------------------//
   	SetBkMode(hdc, TRANSPARENT);
  	SetTextColor(hdc, HELP_TEXT_COLOR);
@@ -173,7 +179,7 @@ extern void DrawGame(HDC hdc)
 		sprintf(sflags, "%i", flags);
 		DrawText(hdc, sflags, -1, &win_objects_pos.count_text_flags, DT_BOTTOM | DT_CENTER | DT_NOCLIP);
  	SetBkMode(hdc, OPAQUE);
-  
+
 	//------------------- Outlines ------------------//
  	 HPEN pen_outl = CreatePen(PS_SOLID, 1, OUTLINE_COLOR);
  	SelectObject(hdc, pen_outl);
@@ -199,16 +205,20 @@ extern void DrawGame(HDC hdc)
 	
 
 	//------------------- Game blocks ----------------//
-		for(INT8 i = 0; i < OVER_BLOCKS; i++){
 
-			if(rplayfblocks[i].status == STATUS_NORM)
-				DrawNormalBlock(hdc, &rplayfblocks[i].pos_block);
-			if(rplayfblocks[i].status == STATUS_MARK)
-				DrawFlagOnBlock(hdc, &rplayfblocks[i].pos_block);
-			if(rplayfblocks[i].status == STATUS_OPEN)
-				DrawEmptyBlock(hdc,  &rplayfblocks[i].pos_block);
+	for(INT8 i = 0; i < HEIGHT_BLOCKS; i++){
+		for(INT8 f = 0; f < WIDTH_BLOCKS; f++){
+
+			PLAYFBLOCK* block = &rplayfblocks[i][f];
+	    	if(block->status == STATUS_NORM)
+	      		DrawNormalBlock(hdc, &block->pos_block);
+	        if(block->status == STATUS_MARK)
+				DrawFlagOnBlock(hdc, &block->pos_block);
+			if(block->status == STATUS_OPEN)
+				DrawEmptyBlock(hdc,  &block->pos_block);
 		}
-	
+	}
+ 
 	DeleteObject(block_brush);
 	DeleteObject(block_brush_2);
 }
@@ -233,19 +243,6 @@ void RenderGameRestart(void)
 	RedrawAll();
 }
 
-
-static void GenerateRandCover(void)
-{
-	RECT rect;
-	for(INT8 i = 0; i < 30; i++){
-		rect.left =   rplayfblocks[i].pos_block.left   + rand()%rplayfblocks[i].pos_block.right;
-		rect.top =    rplayfblocks[i].pos_block.top    + rand()%rplayfblocks[i].pos_block.bottom;
-		rect.right =  rplayfblocks[i].pos_block.right  + rand()%rplayfblocks[i].pos_block.left;
-		rect.bottom = rplayfblocks[i].pos_block.bottom + rand()%rplayfblocks[i].pos_block.top;
-		rand_line_cover[i] = rect;
-
-	}
-}
 
 
 void DrawFlagOnBlock(HDC hdc, RECT *pos)

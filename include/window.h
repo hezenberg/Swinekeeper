@@ -1,4 +1,8 @@
-#include "header.h"
+#ifndef WINDW_H  
+#define WINDW_H  
+
+
+#include "../include/header.h"
 
 ///////////////////////| STR DEFINE |//////////////////////////
 #define WIN_NAME          "GAMEPIG"
@@ -82,8 +86,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 
-
-
+#endif
 
 
 

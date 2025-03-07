@@ -1,7 +1,7 @@
-#include "window.h"
+#include "../include/window.h"
 
 extern WNDCLASS CreateMainWindowClass(HINSTANCE hInstance)
-{
+{	 
 	WNDCLASS wc = {};
 	wc.style         = CS_HREDRAW|CS_VREDRAW;
 	wc.lpfnWndProc   = (WNDPROC)WndProc;
@@ -36,7 +36,7 @@ extern HWND CreateMainWindow(HINSTANCE hInstance)
 
 
 extern WINDOWTITLE WindowTitleInitialization(RECT *main_win_rect, int height_title, LPSTR _text_on_title, LPSTR _text_on_exit_button)
-{
+{		   
     int button_widht = 30;
 	int widht_title = main_win_rect->right;
 
@@ -89,7 +89,7 @@ extern void IsMouseClickOnExitButton(RECT *colision_rect, POINT *point)
 
 
 extern void DrawWindowTitle(BOOL is_pointer_on_btn, WINDOWTITLE *wt, HWND main_window_hand, HDC hdc)
-{	
+{
 	//----------------- TITLE AND OUTLINE-----------------//
 	HBRUSH titlebrush = CreateSolidBrush(WIN_TITLE_COLOR);
 	HPEN hpen = CreatePen(PS_SOLID, WIN_TITLE_OUTLINE_WIDTH, WIN_TITLE_COLOR);
@@ -141,6 +141,7 @@ extern void DrawWindowTitle(BOOL is_pointer_on_btn, WINDOWTITLE *wt, HWND main_w
 
 extern BOOL DrawLine(HDC hdc, int x1, int y1, int x2, int y2)
 {
+	
   POINT pt;
   MoveToEx(hdc, x1, y1, &pt);
   return LineTo(hdc, x2, y2);
@@ -170,10 +171,10 @@ extern void GetMessageErrorAndExit(LPSTR text_error)
 }
 
 
-extern void GetIntegerMessage(LONG num)
+extern void GetIntegerMessage(INT8 num)
 {
 	char str[10];
-	sprintf(str, "%li", num);
+	sprintf(str, "%i", num);
 	GetMsg(str);
 }
 

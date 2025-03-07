@@ -1,4 +1,7 @@
-#include "header.h"
+#ifndef GAMELOG_H
+#define GAMELOG_H
+
+#include "../include/header.h"
 
 #define TYPE_EMPTY           0
 #define TYPE_BOMB            1
@@ -9,13 +12,16 @@
 #define STATUS_BANG          5
 #define STATUS_NORM          6
 
-#define SIZE_BLOCK  43
-#define OVER_BLOCKS 60
-#define COUNT_BOMB  12
+#define SIZE_BLOCK    43
+#define OVER_BLOCKS   60
+#define HEIGHT_BLOCKS 10
+#define WIDTH_BLOCKS  6
+#define COUNT_BOMB    12
 
 #define INDENT_BLOCKS_X         11
 #define INDENT_BLOCKS_Y         115
 
+#define ERROR_ALLOC_MATRX  "Failed allocated memory for matrix!"
 
 
 struct PLAYFBLOCK			  
@@ -23,14 +29,15 @@ struct PLAYFBLOCK
   INT8 type;
   INT8 status;
   INT8 bomb_near;
+  BOOL highlight;
   RECT pos_block;
 
 }; 
 typedef struct PLAYFBLOCK PLAYFBLOCK;
 
-extern PLAYFBLOCK *GameBlocksInitialization(void);
+extern PLAYFBLOCK** GameBlocksInitialization(void);
 
-extern void GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iterator_blocks);
+extern void GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iter_height, INT8 iter_width);
 
 extern INT8 GameGetNumbersOfFlags(void);
 
@@ -38,5 +45,9 @@ extern BOOL GamePlayerIsLooser(void);
 
 static void GameBombGeneration(void);
 
+static void HighlightNearBlocks(RECT *rblock);
+
+static int AllocateMatrix(void);
 
 
+#endif

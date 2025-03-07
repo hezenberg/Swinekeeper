@@ -1,6 +1,6 @@
-#include "header.h"
-#include "window.h"
-#include "gamerender.h"
+#include "../include/header.h"
+#include "../include/window.h"
+#include "../include/gamerender.h"
 
 
 static WNDCLASS    window_class;
@@ -17,9 +17,8 @@ static BOOL isFirstPaint     = TRUE;
 void Initialization(void);
 void Rendering(void);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine, int nCmdShow)
-{
-
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{   
 //////////////////////| init window class create section |////////////////////
 	
 	window_class = CreateMainWindowClass(hInstance);
@@ -36,10 +35,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine,
 		return 1;
 	}	
 
-	ShowWindow(window_hand, nCmdShow);
-    UpdateWindow(window_hand);							 
 
-
+	ShowWindow(window_hand, nCmdShow); 
+    UpdateWindow(window_hand);							  
 //////////////////////////| window message section |///////////////////////////
 	MSG msg = {0};    
 	INT8 iGetOk = 0;   
@@ -66,16 +64,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetTimer(hWnd, 1, 20, NULL);
 
 			break;
-			
-		case WM_PAINT:
+
+		case WM_SHOWWINDOW:
 			if(isFirstPaint){
 				Initialization();
 				isFirstPaint = FALSE;
 			}
-					
-			Rendering();
 
-			break;
+		break;
+
+		case WM_PAINT:
+			if(!isFirstPaint)
+				Rendering();
+			
+		break;
 			
 		case WM_LBUTTONDOWN:
 			if(!isFirstPaint){
@@ -118,22 +120,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 			
 		case WM_TIMER:
-		    RedrawWindow(window_hand, &window_title.button_exit_rect, NULL , RDW_INVALIDATE | RDW_UPDATENOW);
-
-			INT8 iter;
-			RECT *redraw_area = GetRedrawArea(&iter);
-
-			if(redraw_area == NULL)
-				break;
 				
-			for(INT8 i = 0; i < iter; i++)
-				RedrawWindow(window_hand, &redraw_area[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-			
-			break;
+	
+				RedrawWindow(window_hand, &window_title.button_exit_rect, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+				INT8 iter;
+				RECT *redraw_area = GetRedrawArea(&iter);
+
+				if(redraw_area == NULL)
+					break;
+				
+				for(INT8 i = 0; i < iter; i++)
+					RedrawWindow(window_hand, &redraw_area[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+
+				break;
+		
 			
 		case WM_DESTROY:
-			PostQuitMessage(0);  
 
+			PostQuitMessage(0);  
 			break;
 			
 		default:  
@@ -147,13 +151,15 @@ void Initialization(void)
 {
 	GetClientRect(window_hand, &window_rect);
 	window_title = WindowTitleInitialization(&window_rect, WIN_TITLE_WIDTH, WIN_NAME, WIN_EXIT_BTN_TEXT);
+ 
 	RECT area_for_draw = GetAreaForDraw();
 	GameRenderInitialization(&area_for_draw);
+
 	
 }
 
 void Rendering(void)
-{	
+{
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(window_hand, &ps);
 	
