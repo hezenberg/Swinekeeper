@@ -15,12 +15,15 @@
 #define NORMAL_BLOCK_COVER RGB(0,   128,  0)
 #define EMPTY_BLOCK_BKG    RGB(0,   100,  0)
 #define HIGHLIGHTING_BLOCK RGB(100,   100,  0)
+#define BOMB_COLOR         RGB(0,      0,   0)
 ///////////////////////| SIZE DEFINE |////////////////////////
 #define WIN_HEIGHT              560
 #define WIN_WIDTH               280
 #define OUTLINE_SPACE           5
 #define RECT_SIZE_ON_FLAG       70
 #define TOTAL_PUSH_REDRAW_OBJ   15
+#define OFFSET_HIGLIGHT         10
+#define OFFSET_BOMMB            20
 ///////////////////////| ERROR DEFINE |////////////////////////
 #define FAILD_FONT  "faild load font for rendering"
 
@@ -92,18 +95,20 @@ static BOOL RectToDrawLine(HDC hdc, RECT* rect);
 static void RenderGameRestart(void);
 
 
-             /* DRAWING BLOCKS */
-////////////////////////////////////////////////////
-static void DrawLightBlock(HDC hdc, RECT* pos);   //
-   //                                             //
-static void DrawFlagOnBlock(HDC hdc, RECT* pos);  //
-                                                  //
-static void DrawBombBlock(HDC hdc, RECT* pos);    //
-                                                  //
-static void DrawNormalBlock(HDC hdc, RECT *pos);  //
-                                                  //
-static void DrawEmptyBlock(HDC hdc, RECT *pos);   //
-////////////////////////////////////////////////////
+                 /* DRAWING BLOCKS */
+////////////////////////////////////////////////////////
+   //                                                 //
+static void DrawFlagOnBlock(HDC hdc, RECT* pos);      //
+                                                      //
+static void DrawBombBlock(HDC hdc, RECT* pos);        //
+                                                      //
+static void DrawNormalBlock(HDC hdc, RECT *pos);      //
+                                                      //
+static void DrawEmptyBlock(HDC hdc, RECT *pos);       //
+												      //
+static void DrawHighlightOnBlock(HDC hdc, RECT *pos); //
+													  //
+////////////////////////////////////////////////////////
 
 
 #endif

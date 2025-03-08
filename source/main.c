@@ -61,7 +61,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   switch (message)
   {	
 		case WM_CREATE:
-			SetTimer(hWnd, 1, 20, NULL);
+			SetTimer(hWnd, TIMER_REDRAW_MS, 20, NULL);
 
 			break;
 
@@ -100,7 +100,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				RenderHandleMouseEvent(mouse_pos, MOUSE_R_BTN);
 	
 			break;	
-		
+
+		case WM_LBUTTONUP:
+			if(!isFirstPaint)
+				RenderHandleMouseEvent(mouse_pos, MOUSE_L_BTN_UP);
+
+			break;
+
 		case WM_KEYDOWN:
 			if(!isFirstPaint)
 				if(RenderHandleKeysEvent(wParam))

@@ -8,6 +8,7 @@ static PLAYFBLOCK** rplayfblocks         = NULL;
 static RECT         rand_line_cover[30];
 static NEEDREDRAW   need_redraw;
 
+
 extern void GameRenderInitialization(RECT* _drawing_free_area)
 {
 	LoadFonts();
@@ -101,19 +102,31 @@ static void LoadFonts(void)
 
 
 extern void RenderHandleMouseEvent(POINT mouse_pos, INT8 mouse_btn)
-{
+{	
+	//if(GamePlayerIsLooser())
+	//	return;
+
 	for(size_t i = 0; i < HEIGHT_BLOCKS; i++){
 		for(size_t f = 0; f < WIDTH_BLOCKS; f++){
 			if (CheckColision(&rplayfblocks[i][f].pos_block, &mouse_pos)){
-				GameHandleGameBlocks(mouse_btn, i, f);
-				PushRedrawArea(&rplayfblocks[i][f].pos_block);
-				PushRedrawArea(&win_objects_pos.count_text_flags);
+		
+				INT8 what_has_change = GameHandleGameBlocks(mouse_btn, i, f);
+
+				if(what_has_change == CHANGE_ONE_BLOCK){
+					PushRedrawArea(&rplayfblocks[i][f].pos_block);
+					PushRedrawArea(&win_objects_pos.count_text_flags);
+				}
+				else if(what_has_change == CHANGE_MANY_BLOCK){
+					RedrawAll();
+				}
+				else{
+					return;
+				}
 			
 			}
 		}
 	}
 }
-
 
 
 BOOL RenderHandleKeysEvent(UINT_PTR key)
@@ -212,14 +225,27 @@ extern void DrawGame(HDC hdc)
 			PLAYFBLOCK* block = &rplayfblocks[i][f];
 	    	if(block->status == STATUS_NORM)
 	      		DrawNormalBlock(hdc, &block->pos_block);
+				if(block->highlight)
+				  	DrawHighlightOnBlock(hdc, &block->pos_block);
 	        if(block->status == STATUS_MARK)
 				DrawFlagOnBlock(hdc, &block->pos_block);
 			if(block->status == STATUS_OPEN){
+				DrawEmptyBlock(hdc,  &block->pos_block);
+				if(block->count_bomb_near > 0){
+					SelectObject(hdc, count_flag_text_font);
+					INT8 count_bomb = block->count_bomb_near;
+					CHAR scountbomb[3]; scountbomb[2] = '\0';
+					sprintf(scountbomb, "%i", count_bomb);
+					SetBkMode(hdc, TRANSPARENT);
+						DrawText(hdc, scountbomb, -1, &block->pos_block, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+					SetBkMode(hdc, OPAQUE);
+				}
 				if(block->highlight)
-					DrawLightBlock(hdc,  &block->pos_block);
-				else
-					DrawEmptyBlock(hdc,  &block->pos_block);
+					DrawHighlightOnBlock(hdc, &block->pos_block);
 			}
+	
+			if(block->type == TYPE_BOMB && GamePlayerIsLooser())
+				DrawBombBlock(hdc, &block->pos_block);
 				
 			
 		}
@@ -251,7 +277,6 @@ void RenderGameRestart(void)
 }
 
 
-
 void DrawFlagOnBlock(HDC hdc, RECT *pos)
 {
 	HPEN flag_pen = CreatePen(PS_SOLID, 2, FLAG_CHAR_COLOR);
@@ -265,8 +290,8 @@ void DrawFlagOnBlock(HDC hdc, RECT *pos)
 		DrawNormalBlock(hdc, pos);
 
 		line_on_the_char_flag_main.left     = pos->left +  SIZE_BLOCK / 3.5;
-		line_on_the_char_flag_main.top      = pos->top  - SIZE_BLOCK + 45;
-		line_on_the_char_flag_main.right    = pos->left + SIZE_BLOCK / 3.5;
+		line_on_the_char_flag_main.top      = pos->top  - SIZE_BLOCK  + 45;
+		line_on_the_char_flag_main.right    = pos->left + SIZE_BLOCK  / 3.5;
 		line_on_the_char_flag_main.bottom   = pos->bottom  - SIZE_BLOCK + 30;
 	
 	
@@ -327,13 +352,68 @@ static void DrawEmptyBlock(HDC hdc, RECT *pos)
 	DeleteObject(cover_brush);
 }
 
-static void DrawLightBlock(HDC hdc, RECT* pos)
-{
-	HBRUSH block_brush = CreateSolidBrush(HIGHLIGHTING_BLOCK);
-	HBRUSH cover_brush = CreateSolidBrush(NORMAL_BLOCK_COVER);
 
-	SelectObject(hdc, block_brush);
-	FillRect(hdc, pos, block_brush);
-	DeleteObject(block_brush);
-	DeleteObject(cover_brush);
+static void DrawHighlightOnBlock(HDC hdc, RECT *pos)
+{	RECT top_line, right_line, bottom_line, left_line;
+
+	top_line.left   = pos->left + OFFSET_HIGLIGHT;  
+	top_line.top    = pos->top + OFFSET_HIGLIGHT;   
+	top_line.right  = pos->right - OFFSET_HIGLIGHT;
+	top_line.bottom = pos->top + OFFSET_HIGLIGHT; 
+
+	right_line.left   = top_line.right; 
+	right_line.top    = top_line.bottom;
+	right_line.right  = pos->right - OFFSET_HIGLIGHT;
+    right_line.bottom = pos->bottom - OFFSET_HIGLIGHT;
+
+	bottom_line.left   = pos->right - OFFSET_HIGLIGHT;
+	bottom_line.top    = pos->bottom - OFFSET_HIGLIGHT;
+	bottom_line.right  = top_line.left;
+    bottom_line.bottom = pos->bottom - OFFSET_HIGLIGHT;
+
+	left_line.left   = bottom_line.right;
+	left_line.top    = bottom_line.top;
+	left_line.right  = top_line.left;
+    left_line.bottom = top_line.bottom;
+
+	HPEN pen_hig = CreatePen(PS_SOLID, 5, FLAG_CHAR_COLOR);
+ 	SelectObject(hdc, pen_hig);
+		RectToDrawLine(hdc, &top_line);
+		RectToDrawLine(hdc, &right_line);
+		RectToDrawLine(hdc, &bottom_line);
+		RectToDrawLine(hdc, &left_line);
+	DeleteObject(pen_hig);
+}
+
+
+static void DrawBombBlock(HDC hdc, RECT* pos)
+{
+	RECT top_line, right_line, bottom_line, left_line;
+	top_line.left   = pos->left + OFFSET_BOMMB;  
+	top_line.top    = pos->top + OFFSET_BOMMB;   
+	top_line.right  = pos->right - OFFSET_BOMMB;
+	top_line.bottom = pos->top + OFFSET_BOMMB; 
+
+	right_line.left   = top_line.right; 
+	right_line.top    = top_line.bottom;
+	right_line.right  = pos->right - OFFSET_BOMMB;
+    right_line.bottom = pos->bottom - OFFSET_BOMMB;
+
+	bottom_line.left   = pos->right - OFFSET_BOMMB;
+	bottom_line.top    = pos->bottom - OFFSET_BOMMB;
+	bottom_line.right  = top_line.left;
+    bottom_line.bottom = pos->bottom - OFFSET_BOMMB;
+
+	left_line.left   = bottom_line.right;
+	left_line.top    = bottom_line.top;
+	left_line.right  = top_line.left;
+    left_line.bottom = top_line.bottom;
+
+	HPEN pen_bmb = CreatePen(PS_SOLID, 10, BOMB_COLOR);
+ 	SelectObject(hdc, pen_bmb); 
+		RectToDrawLine(hdc, &top_line);
+		RectToDrawLine(hdc, &right_line);
+		RectToDrawLine(hdc, &bottom_line);
+		RectToDrawLine(hdc, &left_line);
+	DeleteObject(pen_bmb);
 }
