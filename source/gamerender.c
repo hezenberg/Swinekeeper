@@ -4,7 +4,7 @@ static RECT         drawing_free_area;
 static WINOBJPOS    win_objects_pos;
 static HFONT        help_text_font       = NULL;
 static HFONT        count_flag_text_font = NULL;
-static PLAYFBLOCK** rplayfblocks;
+static PLAYFBLOCK** rplayfblocks         = NULL;
 static RECT         rand_line_cover[30];
 static NEEDREDRAW   need_redraw;
 
@@ -102,8 +102,8 @@ static void LoadFonts(void)
 
 extern void RenderHandleMouseEvent(POINT mouse_pos, INT8 mouse_btn)
 {
-	for(INT8 i = 0; i < HEIGHT_BLOCKS; i++){
-		for(INT8 f = 0; f < WIDTH_BLOCKS; f++){
+	for(size_t i = 0; i < HEIGHT_BLOCKS; i++){
+		for(size_t f = 0; f < WIDTH_BLOCKS; f++){
 			if (CheckColision(&rplayfblocks[i][f].pos_block, &mouse_pos)){
 				GameHandleGameBlocks(mouse_btn, i, f);
 				PushRedrawArea(&rplayfblocks[i][f].pos_block);
@@ -206,16 +206,22 @@ extern void DrawGame(HDC hdc)
 
 	//------------------- Game blocks ----------------//
 
-	for(INT8 i = 0; i < HEIGHT_BLOCKS; i++){
-		for(INT8 f = 0; f < WIDTH_BLOCKS; f++){
+	for(size_t i = 0; i < HEIGHT_BLOCKS; i++){
+		for(size_t f = 0; f < WIDTH_BLOCKS; f++){
 
 			PLAYFBLOCK* block = &rplayfblocks[i][f];
 	    	if(block->status == STATUS_NORM)
 	      		DrawNormalBlock(hdc, &block->pos_block);
 	        if(block->status == STATUS_MARK)
 				DrawFlagOnBlock(hdc, &block->pos_block);
-			if(block->status == STATUS_OPEN)
-				DrawEmptyBlock(hdc,  &block->pos_block);
+			if(block->status == STATUS_OPEN){
+				if(block->highlight)
+					DrawLightBlock(hdc,  &block->pos_block);
+				else
+					DrawEmptyBlock(hdc,  &block->pos_block);
+			}
+				
+			
 		}
 	}
  
@@ -239,6 +245,7 @@ static BOOL RectToDrawLine(HDC hdc, RECT *rect)
 
 void RenderGameRestart(void)
 {
+	FreeAlocatedMatrix(rplayfblocks);
 	rplayfblocks = GameBlocksInitialization();
 	RedrawAll();
 }
@@ -312,6 +319,17 @@ static void DrawNormalBlock(HDC hdc, RECT *pos)
 static void DrawEmptyBlock(HDC hdc, RECT *pos)
 {
 	HBRUSH block_brush = CreateSolidBrush(EMPTY_BLOCK_BKG);
+	HBRUSH cover_brush = CreateSolidBrush(NORMAL_BLOCK_COVER);
+
+	SelectObject(hdc, block_brush);
+	FillRect(hdc, pos, block_brush);
+	DeleteObject(block_brush);
+	DeleteObject(cover_brush);
+}
+
+static void DrawLightBlock(HDC hdc, RECT* pos)
+{
+	HBRUSH block_brush = CreateSolidBrush(HIGHLIGHTING_BLOCK);
 	HBRUSH cover_brush = CreateSolidBrush(NORMAL_BLOCK_COVER);
 
 	SelectObject(hdc, block_brush);

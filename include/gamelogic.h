@@ -45,9 +45,11 @@ extern BOOL GamePlayerIsLooser(void);
 
 static void GameBombGeneration(void);
 
-static void HighlightNearBlocks(RECT *rblock);
+static void HighlightNearBlocks(PLAYFBLOCK* block);
 
 static int AllocateMatrix(void);
+
+extern void FreeAlocatedMatrix(PLAYFBLOCK** matrix);
 
 
 #endif

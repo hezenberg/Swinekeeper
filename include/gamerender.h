@@ -14,6 +14,7 @@
 #define NORMAL_BLOCK_BKG   RGB(0,   255,  0)
 #define NORMAL_BLOCK_COVER RGB(0,   128,  0)
 #define EMPTY_BLOCK_BKG    RGB(0,   100,  0)
+#define HIGHLIGHTING_BLOCK RGB(100,   100,  0)
 ///////////////////////| SIZE DEFINE |////////////////////////
 #define WIN_HEIGHT              560
 #define WIN_WIDTH               280
@@ -93,7 +94,8 @@ static void RenderGameRestart(void);
 
              /* DRAWING BLOCKS */
 ////////////////////////////////////////////////////
-                                                  //
+static void DrawLightBlock(HDC hdc, RECT* pos);   //
+   //                                             //
 static void DrawFlagOnBlock(HDC hdc, RECT* pos);  //
                                                   //
 static void DrawBombBlock(HDC hdc, RECT* pos);    //

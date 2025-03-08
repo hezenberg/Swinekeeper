@@ -1,8 +1,8 @@
 #include "../include/gamelogic.h"
 
-static INT8       flags                                    = COUNT_BOMB;
-static PLAYFBLOCK **playfblocks;
-static BOOL       FlagYouLooser                            = FALSE;
+static INT8         flags         = COUNT_BOMB;
+static PLAYFBLOCK** playfblocks   = NULL;
+static BOOL         FlagYouLooser = FALSE;
 
 extern PLAYFBLOCK** GameBlocksInitialization()
 {   
@@ -13,9 +13,8 @@ extern PLAYFBLOCK** GameBlocksInitialization()
 	flags = COUNT_BOMB;
 	FlagYouLooser  = FALSE;
 	
-	INT8 count = 0; 
-	for(INT8 i = 0; i < HEIGHT_BLOCKS; i++){
-		for(INT8 f = 0; f < WIDTH_BLOCKS; f++){
+	for(size_t i = 0; i < HEIGHT_BLOCKS; i++){
+		for(size_t f = 0; f < WIDTH_BLOCKS; f++){
 			PLAYFBLOCK block;
 			block.pos_block.left   = f * SIZE_BLOCK + 1;
 			block.pos_block.top    = i * SIZE_BLOCK + 1;
@@ -29,9 +28,10 @@ extern PLAYFBLOCK** GameBlocksInitialization()
 
 
 			block.status = STATUS_NORM;
+			block.highlight = FALSE;
 
 			playfblocks[i][f] = block;
-			count++;
+
 		}
 	}
 	
@@ -50,6 +50,9 @@ extern void GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iter_height, INT8 ite
 			}
 		}
 		if(MOUSE_L_BTN  == down_mouse_btn){
+			if(block->status == STATUS_OPEN){
+				HighlightNearBlocks(block);
+			}
 
 			if(block->status == STATUS_NORM){
 				if(block->type != TYPE_BOMB){
@@ -67,9 +70,7 @@ extern void GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iter_height, INT8 ite
 				flags ++;
 			}
 
-			if(block->status == STATUS_OPEN){
-				HighlightNearBlocks(&block->pos_block);
-			}
+		
 		}
 	}
 
@@ -89,23 +90,33 @@ extern BOOL GamePlayerIsLooser(void)
 }
 
 
-void HighlightNearBlocks(RECT *rblock)
+static void HighlightNearBlocks(PLAYFBLOCK* block)
 {
+	block->highlight = TRUE;
 	return;
 }
 
 
-int AllocateMatrix(void)
+static int AllocateMatrix(void)
 {
-	playfblocks = (PLAYFBLOCK**)calloc(HEIGHT_BLOCKS, sizeof(PLAYFBLOCK*)*HEIGHT_BLOCKS*WIDTH_BLOCKS);
+	playfblocks = (PLAYFBLOCK**)calloc(HEIGHT_BLOCKS, sizeof(PLAYFBLOCK*) * HEIGHT_BLOCKS);
 	if(NULL == playfblocks)
 		return 1;
 
 	for (size_t i = 0; i < HEIGHT_BLOCKS; i++){
-		playfblocks[i] = (PLAYFBLOCK*)calloc(WIDTH_BLOCKS, sizeof(PLAYFBLOCK)*WIDTH_BLOCKS);
+		playfblocks[i] = (PLAYFBLOCK*)calloc(WIDTH_BLOCKS, sizeof(PLAYFBLOCK) * WIDTH_BLOCKS);
 		if(NULL == playfblocks[i])
 			return 1;
 	}
 
 	return 0;
 }
+
+
+extern void FreeAlocatedMatrix(PLAYFBLOCK** matrix)
+{
+ 	for(size_t i = 0; i < HEIGHT_BLOCKS; i++)
+ 		free(playfblocks[i]);
+	
+ 	free(playfblocks);
+ }
