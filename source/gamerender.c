@@ -376,7 +376,7 @@ static void DrawHighlightOnBlock(HDC hdc, RECT *pos)
 	left_line.right  = top_line.left;
     left_line.bottom = top_line.bottom;
 
-	HPEN pen_hig = CreatePen(PS_SOLID, 5, FLAG_CHAR_COLOR);
+	HPEN pen_hig = CreatePen(PS_SOLID, 3, FLAG_CHAR_COLOR);
  	SelectObject(hdc, pen_hig);
 		RectToDrawLine(hdc, &top_line);
 		RectToDrawLine(hdc, &right_line);

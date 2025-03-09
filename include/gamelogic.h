@@ -53,7 +53,7 @@ extern BOOL GamePlayerIsLooser(void);
 
 static void GameBombGeneration(void);
 
-static void RecalculateCurrentNearBlocks(INT8 iter_height, INT8 iter_width);
+static POINT* RecalculateCurrentNearBlocks(INT8 iter_height, INT8 iter_width, POINT blocks[]);
 
 static INT8 AllocateMatrix(void);
 
@@ -67,6 +67,8 @@ static int GetCountNearBomb(INT8 iter_height, INT8 iter_width);
 
 extern BOOL GetYouWinerFlag(void);
 
-static void CheckWin(void);
+static void UpdateGame(void);
+
+static void ParseEmptyBlocks(INT8 iter_height_start, INT8 iter_width_start);
 
 #endif
