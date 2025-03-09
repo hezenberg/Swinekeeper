@@ -103,20 +103,31 @@ static void LoadFonts(void)
 
 extern void RenderHandleMouseEvent(POINT mouse_pos, INT8 mouse_btn)
 {	
-	//if(GamePlayerIsLooser())
-	//	return;
+
+	if(GamePlayerIsLooser()){
+		if(mouse_btn == MOUSE_L_BTN)
+			RenderGameRestart();
+		return;
+	}
+
 
 	for(size_t i = 0; i < HEIGHT_BLOCKS; i++){
 		for(size_t f = 0; f < WIDTH_BLOCKS; f++){
 			if (CheckColision(&rplayfblocks[i][f].pos_block, &mouse_pos)){
-		
-				INT8 what_has_change = GameHandleGameBlocks(mouse_btn, i, f);
 
-				if(what_has_change == CHANGE_ONE_BLOCK){
-					PushRedrawArea(&rplayfblocks[i][f].pos_block);
+				RECT redraw_objects[50] = {0};
+				INT8 size_redraw_obj = GameHandleGameBlocks(mouse_btn, i, f, redraw_objects);
+		
+				if(size_redraw_obj >= 0){
+					for (size_t i = 0; i < size_redraw_obj; i++)
+						PushRedrawArea(&redraw_objects[i]);
+					PushRedrawArea(&win_objects_pos.help_text_rect);
 					PushRedrawArea(&win_objects_pos.count_text_flags);
+					//GetIntegerMessage(need_redraw.last_object_iter);
+					return;
 				}
-				else if(what_has_change == CHANGE_MANY_BLOCK){
+				
+				if(size_redraw_obj == GAME_RESTART){
 					RedrawAll();
 				}
 				else{
@@ -244,12 +255,16 @@ extern void DrawGame(HDC hdc)
 					DrawHighlightOnBlock(hdc, &block->pos_block);
 			}
 	
-			if(block->type == TYPE_BOMB && GamePlayerIsLooser())
+			if(block->type == TYPE_BOMB && GamePlayerIsLooser()){
 				DrawBombBlock(hdc, &block->pos_block);
+			}
 				
 			
 		}
 	}
+
+	if(GamePlayerIsLooser())
+		DrawYouLooser(hdc);
  
 	DeleteObject(block_brush);
 	DeleteObject(block_brush_2);
@@ -416,4 +431,26 @@ static void DrawBombBlock(HDC hdc, RECT* pos)
 		RectToDrawLine(hdc, &bottom_line);
 		RectToDrawLine(hdc, &left_line);
 	DeleteObject(pen_bmb);
+}
+
+
+void DrawYouLooser(HDC hdc)
+{
+
+	RECT looser_rect;
+	looser_rect.left   = drawing_free_area.left;  
+	looser_rect.top    = drawing_free_area.top + 200;   
+	looser_rect.right  = drawing_free_area.right;
+	looser_rect.bottom = drawing_free_area.bottom - 200; 
+
+	HBRUSH looser_brush = CreateSolidBrush(BOMB_COLOR);
+
+	SelectObject(hdc, looser_brush);
+	FillRect(hdc, &looser_rect, looser_brush);
+	SetBkMode(hdc, TRANSPARENT);
+		DrawText(hdc, "--- YOU LOOSER ---", -1, &looser_rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+	SetBkMode(hdc, OPAQUE);
+
+	DeleteObject(looser_brush);
+
 }

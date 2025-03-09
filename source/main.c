@@ -123,29 +123,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			else
 				IsMouseOnExitBtn = FALSE;
 
-			break;
-			
+		break;
+
+
+		case WM_DESTROY:
+			PostQuitMessage(0);  
+		break;
+
 		case WM_TIMER:
 				
-	
-				RedrawWindow(window_hand, &window_title.button_exit_rect, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-				INT8 iter;
-				RECT *redraw_area = GetRedrawArea(&iter);
+			RedrawWindow(window_hand, &window_title.button_exit_rect, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+			
+			INT8 iter;
+			RECT *redraw_area = GetRedrawArea(&iter);
 
-				if(redraw_area == NULL)
-					break;
-				
-				for(INT8 i = 0; i < iter; i++)
-					RedrawWindow(window_hand, &redraw_area[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-
+			if(redraw_area == NULL)
 				break;
 		
-			
-		case WM_DESTROY:
+			for(INT8 i = 0; i < iter; i++)
+				RedrawWindow(window_hand, &redraw_area[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 
-			PostQuitMessage(0);  
-			break;
-			
+		break;
+
 		default:  
 			return DefWindowProc(hWnd, message, wParam, lParam);
   }

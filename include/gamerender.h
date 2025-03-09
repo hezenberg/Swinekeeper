@@ -60,7 +60,7 @@ typedef struct WINOBJPOS WINOBJPOS;
 struct NEEDREDRAW				  
 {
 	INT8 last_object_iter;
-	RECT arr_area[5];
+	RECT arr_area[TOTAL_PUSH_REDRAW_OBJ];
 }; 
 typedef struct NEEDREDRAW NEEDREDRAW;
 
@@ -94,6 +94,8 @@ static BOOL RectToDrawLine(HDC hdc, RECT* rect);
 // Restart game and redraw game area
 static void RenderGameRestart(void);
 
+
+static void DrawYouLooser(HDC hdc);
 
                  /* DRAWING BLOCKS */
 ////////////////////////////////////////////////////////

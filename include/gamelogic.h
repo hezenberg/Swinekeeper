@@ -24,9 +24,10 @@
 
 #define ERROR_ALLOC_MATRX  "Failed allocated memory for matrix!"
 
-#define CHANGE_ONE_BLOCK  0
+//#define CHANGE_ONE_BLOCK  0
 #define CHANGE_MANY_BLOCK 1
-#define NOTHING_CHANGE    2
+//#define NOTHING_CHANGE    2
+
 #define GAME_RESTART      3
 
 #define TOTAL_NEAR_BLOCKS 8
@@ -45,7 +46,7 @@ typedef struct PLAYFBLOCK PLAYFBLOCK;
 
 extern PLAYFBLOCK** GameBlocksInitialization(void);
 
-extern INT8 GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iter_height, INT8 iter_width);
+extern INT8 GameHandleGameBlocks(INT8 down_mouse_btn, INT8 iter_height, INT8 iter_width, RECT array_redraw_objects[]);
 
 extern INT8 GameGetNumbersOfFlags(void);
 
