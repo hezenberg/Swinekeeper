@@ -104,7 +104,7 @@ static void LoadFonts(void)
 extern void RenderHandleMouseEvent(POINT mouse_pos, INT8 mouse_btn)
 {	
 
-	if(GamePlayerIsLooser()){
+	if(GamePlayerIsLooser() || GamePlayerIsWiner()){
 		if(mouse_btn == MOUSE_L_BTN)
 			RenderGameRestart();
 		return;
@@ -265,7 +265,10 @@ extern void DrawGame(HDC hdc)
 	}
 
 	if(GamePlayerIsLooser())
-		DrawYouLooser(hdc);
+		DrawEndGame(hdc, YOULOSER);
+
+	if(GamePlayerIsWiner())
+		DrawEndGame(hdc, YOUWINER);
  
 	DeleteObject(block_brush);
 	DeleteObject(block_brush_2);
@@ -433,7 +436,7 @@ static void DrawBombBlock(HDC hdc, RECT* pos)
 }
 
 
-void DrawYouLooser(HDC hdc)
+void DrawEndGame(HDC hdc, INT flag)
 {
 
 	RECT looser_rect;
@@ -447,7 +450,10 @@ void DrawYouLooser(HDC hdc)
 	SelectObject(hdc, looser_brush);
 	FillRect(hdc, &looser_rect, looser_brush);
 	SetBkMode(hdc, TRANSPARENT);
+	if(flag == YOULOSER)
 		DrawText(hdc, "--- YOU LOOSER ---", -1, &looser_rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+	if(flag == YOUWINER)
+		DrawText(hdc, "+++ YOU HACKER +++", -1, &looser_rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 	SetBkMode(hdc, OPAQUE);
 
 	DeleteObject(looser_brush);

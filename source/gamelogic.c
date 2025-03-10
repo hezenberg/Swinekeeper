@@ -4,8 +4,12 @@ static INT8         flags         = TOTAL_BOMBS;
 static PLAYFBLOCK** playfblocks   = NULL;
 static BOOL         FlagYouLooser = FALSE;
 static BOOL         FlagYouWiner  = FALSE;
-static RECT       BufferDeleteHigl[TOTAL_NEAR_BLOCKS];
-static BOOL       BufferIsEmpty = TRUE;
+
+static RECT       	BufferDeleteHigl[TOTAL_NEAR_BLOCKS];
+static BOOL       	BufferIsEmpty  = TRUE;
+
+
+
 extern PLAYFBLOCK** GameBlocksInitialization()
 {   
 	
@@ -145,6 +149,12 @@ extern BOOL GamePlayerIsLooser(void)
 }
 
 
+BOOL GamePlayerIsWiner(void)
+{
+	return FlagYouWiner;
+}
+
+
 static POINT* RecalculateCurrentNearBlocks(INT8 iter_height, INT8 iter_width, POINT CurrentNearBlocks[])
 {	
 	POINT operation[TOTAL_NEAR_BLOCKS];
@@ -246,10 +256,6 @@ extern void FreeAlocatedMatrix(PLAYFBLOCK** matrix)
 			}
 		}
 	}
-
-
-	if(FlagYouWiner)
-		GetMsg("WIN");
 	
  }
 
@@ -259,25 +265,3 @@ extern void FreeAlocatedMatrix(PLAYFBLOCK** matrix)
 	return FlagYouWiner;
  }
 
-
- static void ParseEmptyBlocks(INT8 iter_height_start, INT8 iter_width_start)
- {	
-	//const INT8 possible_empty_block = (HEIGHT_BLOCKS * WIDTH_BLOCKS) - TOTAL_BOMBS;
-	//POINT buffer_blocks[TOTAL_BOMBS] = {0};
-	//POINT empty_blocks[possible_empty_block];
-	
-	POINT CurrentNearBlocks[TOTAL_NEAR_BLOCKS];
-    RecalculateCurrentNearBlocks(iter_height_start, iter_width_start, CurrentNearBlocks);
-	for (size_t i = 0; i < TOTAL_NEAR_BLOCKS; i++)
-	{	
-		if(CurrentNearBlocks[i].x > -1){
-			if(playfblocks[CurrentNearBlocks[i].x][CurrentNearBlocks[i].y].type != TYPE_BOMB){
-				playfblocks[CurrentNearBlocks[i].x][CurrentNearBlocks[i].y].status = STATUS_OPEN;
-				playfblocks[CurrentNearBlocks[i].x][CurrentNearBlocks[i].y].count_bomb_near = GetCountNearBomb(CurrentNearBlocks[i].x, CurrentNearBlocks[i].y);
-			}
-	
-		}
-	}
-		
-	
- }

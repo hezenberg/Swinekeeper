@@ -30,6 +30,9 @@
 #define MOUSE_R_BTN 1
 #define MOUSE_L_BTN 2
 
+#define YOUWINER 406
+#define YOULOSER 407
+
 // The structure stores data about all coordinates 
 // of objects that will be drawn in GameDraw 
 struct WINOBJPOS				  
@@ -95,7 +98,7 @@ static BOOL RectToDrawLine(HDC hdc, RECT* rect);
 static void RenderGameRestart(void);
 
 
-static void DrawYouLooser(HDC hdc);
+static void DrawEndGame(HDC hdc, INT mode);
 
                  /* DRAWING BLOCKS */
 ////////////////////////////////////////////////////////
