@@ -158,16 +158,17 @@ BOOL RenderHandleKeysEvent(UINT_PTR key)
 }
 
 
-extern RECT* GetRedrawArea(INT8 *iter)
+extern INT8 GetRedrawArea(RECT redraw_area[])
 {
 	if(need_redraw.last_object_iter > 0){
-		*iter = need_redraw.last_object_iter;
+		memcpy(redraw_area, need_redraw.arr_area, sizeof(RECT) * need_redraw.last_object_iter);
+		INT8 iter = need_redraw.last_object_iter;
 		need_redraw.last_object_iter = 0;
 
-		return need_redraw.arr_area;
+		return iter;
 	}
 		
-    return NULL;
+    return -1;
 }
 
 
@@ -347,24 +348,22 @@ void DrawFlagOnBlock(HDC hdc, RECT *pos)
 static void DrawNormalBlock(HDC hdc, RECT *pos)
 {
 	HBRUSH block_brush = CreateSolidBrush(NORMAL_BLOCK_BKG);
-	HBRUSH cover_brush = CreateSolidBrush(NORMAL_BLOCK_COVER);
 
 	SelectObject(hdc, block_brush);
 	FillRect(hdc, pos, block_brush);
 	DeleteObject(block_brush);
-	DeleteObject(cover_brush);
+;
 }
 
 
 static void DrawEmptyBlock(HDC hdc, RECT *pos)
 {
 	HBRUSH block_brush = CreateSolidBrush(EMPTY_BLOCK_BKG);
-	HBRUSH cover_brush = CreateSolidBrush(NORMAL_BLOCK_COVER);
 
 	SelectObject(hdc, block_brush);
 	FillRect(hdc, pos, block_brush);
 	DeleteObject(block_brush);
-	DeleteObject(cover_brush);
+
 }
 
 

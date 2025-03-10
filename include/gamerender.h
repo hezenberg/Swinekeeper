@@ -65,7 +65,7 @@ struct NEEDREDRAW
 typedef struct NEEDREDRAW NEEDREDRAW;
 
 // Geting game area for redraw, will return size array or NULL if arr empty
-extern RECT* GetRedrawArea(INT8 *iter); 
+extern INT8 GetRedrawArea(RECT redraw_area[]); 
 
 // Push new object for redraw
 extern BOOL PushRedrawArea(RECT *redraw_area);

@@ -134,14 +134,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				
 			RedrawWindow(window_hand, &window_title.button_exit_rect, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 			
-			INT8 iter;
-			RECT *redraw_area = GetRedrawArea(&iter);
+			RECT redraw_area_arr[TOTAL_PUSH_REDRAW_OBJ] = {0};
+			INT8 iter = GetRedrawArea(redraw_area_arr);
 
-			if(redraw_area == NULL)
+			if(iter < 0)
 				break;
 		
 			for(INT8 i = 0; i < iter; i++)
-				RedrawWindow(window_hand, &redraw_area[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+				RedrawWindow(window_hand, &redraw_area_arr[i], NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 
 		break;
 
